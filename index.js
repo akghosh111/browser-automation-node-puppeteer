@@ -10,6 +10,15 @@ async function start() {
         return Array.from(document.querySelectorAll(".info strong")).map(x => x.textContent);
     })
     await fs.writeFile("names.txt", names.join("\r\n"));
+
+    const photos = await page.$$eval("img", (imgs) => {
+        return imgs.map(x => x.src)
+    })
+
+    for(const photo of photos){
+        const imagepage = await page.goto(photo);
+        await fs.writeFile(photo.split("/").pop(), await imagepage.buffer())
+    }
     
     await browser.close();
 }
